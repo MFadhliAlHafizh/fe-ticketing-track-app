@@ -1,21 +1,24 @@
 <script setup>
-// TODO: Import necessary dependencies
-// Hint: You'll need to import from vue, pinia, and your auth store
+import { useAuthStore } from '@/stores/auth';
+import { storeToRefs } from 'pinia';
+import { ref } from 'vue';
 
-// TODO: Initialize auth store and get necessary refs
-// Hint: Use useAuthStore() and storeToRefs()
+const authStore = useAuthStore();
+const { loading, error } = storeToRefs(authStore);
+const { login } = authStore;
 
-// TODO: Create form ref with login fields
-// Hint: You'll need email and password
 const form = ref({
-    // Your form fields here
+    email: null,
+    password: null,
 })
 
-// TODO: Implement handleSubmit function
-// Hint: This should call the login function from auth store
-// and handle any errors
 const handleSubmit = async () => {
-    // Your code here
+    await login(form.value);
+
+    if (error.value === "Unauthorized") {
+        form.value.password = null;
+        alert("Email atau password salah");
+    }
 }
 
 // TODO: Implement togglePassword function
@@ -32,7 +35,7 @@ const togglePassword = () => {
             <label for="email" class="block text-sm font-medium text-gray-700">Email</label>
             <div class="mt-1 relative">
                 <!-- TODO: Add v-model binding for email -->
-                <input type="email" id="email" name="email" required
+                <input v-model="form.email" type="email" id="email" name="email" required
                     class="w-full px-4 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
                     placeholder="nama@perusahaan.com">
                 <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
@@ -46,7 +49,7 @@ const togglePassword = () => {
             <label for="password" class="block text-sm font-medium text-gray-700">Password</label>
             <div class="mt-1 relative">
                 <!-- TODO: Add v-model binding for password -->
-                <input type="password" id="password" name="password" required
+                <input v-model="form.password" type="password" id="password" name="password" required
                     class="w-full px-4 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
                     placeholder="••••••••">
                 <div class="absolute inset-y-0 right-0 pr-3 flex items-center">
@@ -73,7 +76,12 @@ const togglePassword = () => {
             <!-- TODO: Add loading state to button -->
             <button type="submit"
                 class="w-full flex justify-center py-2 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
-                Masuk
+                <span v-if="!loading">
+                    Masuk
+                </span>
+                <span v-else>
+                    Loading...
+                </span>
             </button>
         </div>
     </form>

@@ -1,29 +1,45 @@
-// TODO: Import necessary dependencies
-// Hint: You'll need pinia, axios, router, and cookies
+import { defineStore } from "pinia";
+import { axiosInstance } from "@/plugins/axios";
+import { handleError } from "@/helpers/errorHelper";
+import router from "@/router";
+import Cookies from "js-cookie";
 
 export const useAuthStore = defineStore("auth", {
     state: () => ({
-        // TODO: Define your state properties
-        // Hint: You'll need user, loading, error, and success states
+        user: null,
+        loading: false,
+        error: null,
+        success: null,
     }),
 
     getters: {
-        // TODO: Implement token getter
-        // Hint: Get token from cookies
-
-        // TODO: Implement isAuthenticated getter
-        // Hint: Check if user exists
+        token: () => Cookies.get('token'),
+        isAuthenticated: (state) => !!state.user,
     },
 
     actions: {
         async login(credentials) {
-            // TODO: Implement login action
-            // Steps:
-            // 1. Set loading state
-            // 2. Make API call to login endpoint
-            // 3. Store token in cookies
-            // 4. Handle success/error
-            // 5. Redirect user
+            this.loading = true;
+
+            try {
+                const response = await axiosInstance.post('login', credentials);
+
+                const token = response.data.data.token;
+
+                Cookies.set("token", token);
+
+                this.success = response.data.message;
+
+                if (response.data.data.user === "admin") {
+                    router.push({ name: 'admin.dashboard' });
+                } else {
+                    router.push({ name: 'app.dashboard' });
+                }
+            } catch (error) {
+                this.error = handleError(error);
+            } finally {
+                this.loading = false;
+            }
         },
 
         async register(credentials) {
