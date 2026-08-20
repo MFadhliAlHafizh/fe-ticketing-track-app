@@ -59,7 +59,7 @@ onMounted(async () => {
                         <div class="mt-4 flex items-center space-x-4">
                             <span class="px-3 py-1 text-sm  rounded-lg" :class="{
                                 'text-blue-700 bg-blue-100': ticket.status === 'open',
-                                'text-yellow-700 bg-yellow-100': ticket.status === 'in_progress',
+                                'text-yellow-700 bg-yellow-100': ticket.status === 'onprogress',
                                 'text-green-700 bg-green-100': ticket.status === 'resolved',
                                 'text-red-700 bg-red-100': ticket.status === 'rejected'
                             }">
@@ -129,7 +129,7 @@ onMounted(async () => {
                             <select v-model="form.status"
                                 class="w-full px-4 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500">
                                 <option value="open" class="text-blue-700">Open</option>
-                                <option value="in_progress" class="text-yellow-700">On Progress</option>
+                                <option value="onprogress" class="text-yellow-700">On Progress</option>
                                 <option value="resolved" class="text-green-700">Resolved</option>
                                 <option value="rejected" class="text-red-700">Rejected</option>
                             </select>

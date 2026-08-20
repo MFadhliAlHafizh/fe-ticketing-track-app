@@ -1,21 +1,31 @@
 <script setup>
-// TODO: Import necessary dependencies
-// Hint: You'll need to import from vue, pinia, lodash, feather-icons, and luxon
+import { onMounted, ref, watch } from 'vue';
+import { useTicketStore } from '@/stores/ticket';
+import { storeToRefs } from 'pinia';
+import { capitalize, debounce } from 'lodash';
+import feather from "feather-icons";
+import { DateTime } from 'luxon';
 
-// TODO: Initialize ticket store and get necessary refs
-// Hint: Use useTicketStore() and storeToRefs()
+const ticketStore = useTicketStore();
+const { tickets } = storeToRefs(ticketStore);
+const { fetchTickets } = ticketStore;
 
-// TODO: Create filters ref with search fields
-// Hint: You'll need search, status, priority, and date
 const filters = ref({
-    // Your filter fields here
-})
+    search: "",
+    status: "",
+    priority: "",
+    date: "",
+});
 
-// TODO: Implement watch effect on filters
-// Hint: Use debounce and call fetchTickets with updated filters
+watch(filters, debounce(async () => {
+    await fetchTickets(filters.value);
+}, 300), { deep:true });
 
-// TODO: Implement onMounted hook
-// Hint: Fetch initial tickets and initialize feather icons
+onMounted(async() => {
+    await fetchTickets();
+
+    feather.replace();
+});
 
 </script>
 
@@ -49,7 +59,7 @@ const filters = ref({
                         <option value="low">Low</option>
                     </select>
                     <!-- Date Filter -->
-                    <select
+                    <select v-model="filters.date"
                         class="border border-gray-200 rounded-lg px-4 py-2 text-sm focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500">
                         <option value="">Semua Tanggal</option>
                         <option value="today">Hari Ini</option>
@@ -99,7 +109,7 @@ const filters = ref({
                             <td class="px-6 py-4 whitespace-nowrap">
                                 <span class="px-3 py-1 text-xs font-medium rounded-full" :class="{
                                     'text-blue-700 bg-blue-100': ticket.status === 'open',
-                                    'text-yellow-700 bg-yellow-100': ticket.status === 'in_progress',
+                                    'text-yellow-700 bg-yellow-100': ticket.status === 'onprogress',
                                     'text-green-700 bg-green-100': ticket.status === 'resolved',
                                     'text-red-700 bg-red-100': ticket.status === 'rejected'
                                 }">

@@ -63,7 +63,7 @@ const filters = ref({
                     class="border border-gray-200 rounded-lg px-4 py-2 text-sm focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500">
                     <option value="">Semua Status</option>
                     <option value="open">Open</option>
-                    <option value="in_progress">In Progress</option>
+                    <option value="onprogress">In Progress</option>
                     <option value="resolved">Resolved</option>
                     <option value="rejected">Rejected</option>
                 </select>
