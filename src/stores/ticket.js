@@ -54,7 +54,7 @@ export const useTicketStore = defineStore("ticket", {
 
             try {
                 const response = await axiosInstance.post(`ticket-reply/${code}`, payload);
-                const success = response.data.message;
+                this.success = response.data.message;
                 return response.data.data;
             } catch (error) {
                 this.error = handleError(error);

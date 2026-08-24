@@ -1,41 +1,40 @@
 <script setup>
-// TODO: Import necessary dependencies
-// Hint: You'll need to import from vue, pinia, lodash, feather-icons, luxon, and vue-router
+import { onMounted, ref } from 'vue';
+import { useTicketStore } from '@/stores/ticket';
+import { storeToRefs } from 'pinia';
+import { capitalize } from 'lodash';
+import { DateTime } from 'luxon';
+import { useRoute } from 'vue-router';
+import feather from 'feather-icons';
 
-// TODO: Initialize ticket store and get necessary refs
-// Hint: Use useTicketStore() and storeToRefs()
+const ticketStore = useTicketStore();
+const { success, error, loading } = storeToRefs(ticketStore);
+const { fetchTicket, createTicketReply } = ticketStore;
 
-// TODO: Create route instance
-// Hint: Use useRoute()
+const route = useRoute();
 
-// TODO: Create refs for ticket and form
-// Hint: You'll need ticket object and form with content field
 const ticket = ref({})
 const form = ref({
     content: '',
 })
 
-// TODO: Get store methods and refs
-// Hint: Destructure success, error, loading from storeToRefs
-// Hint: Destructure fetchTicket and createTicketReply methods
-
-// TODO: Implement fetchTicketDetail function
-// Hint: This should call fetchTicket with route code param
 const fetchTicketDetail = async () => {
-    // Your code here
+    const response = await fetchTicket(route.params.code)
+
+    ticket.value = response
+    form.value.status = response.status
 }
 
-// TODO: Implement handleSubmit function
-// Hint: This should call createTicketReply with code and form
-// Then refetch ticket details
 const handleSubmit = async () => {
-    // Your code here
+    await createTicketReply(route.params.code, form.value)
+
+    await fetchTicketDetail()
 }
 
-// TODO: Implement onMounted hook
-// Hint: Fetch initial ticket details and initialize feather icons
 onMounted(async () => {
-    // Your code here
+    await fetchTicketDetail()
+
+    feather.replace()
 })
 </script>
 
@@ -56,10 +55,20 @@ onMounted(async () => {
                 <div>
                     <h1 class="text-2xl font-bold text-gray-800">{{ ticket.title }}</h1>
                     <div class="mt-2 flex items-center space-x-4">
-                        <span class="px-3 py-1 text-sm font-medium text-blue-700 bg-blue-100 rounded-full">
+                        <span class="px-3 py-1 text-sm  rounded-lg" :class="{
+                            'text-blue-700 bg-blue-100': ticket.status === 'open',
+                            'text-yellow-700 bg-yellow-100': ticket.status === 'onprogress',
+                            'text-green-700 bg-green-100': ticket.status === 'resolved',
+                            'text-red-700 bg-red-100': ticket.status === 'rejected'
+                        }">
                             {{ capitalize(ticket.status) }}
                         </span>
-                        <span class="px-3 py-1 text-sm font-medium text-red-700 bg-red-100 rounded-full">
+
+                        <span class="px-3 py-1 text-sm rounded-lg" :class="{
+                            'text-red-700 bg-red-100': ticket.priority === 'high',
+                            'text-yellow-700 bg-yellow-100': ticket.priority === 'medium',
+                            'text-green-700 bg-green-100': ticket.priority === 'low'
+                        }">
                             {{ capitalize(ticket.priority) }}
                         </span>
                         <span class="text-sm text-gray-500">#{{ ticket.code }}</span>
