@@ -1,27 +1,25 @@
 <script setup>
-// TODO: Import necessary dependencies
-// Hint: You'll need to import from vue, pinia, feather-icons
+import { onMounted, ref } from 'vue';
+import { useTicketStore } from '@/stores/ticket';
+import { storeToRefs } from 'pinia';
+import feather from 'feather-icons';
 
-// TODO: Initialize ticket store and get necessary refs
-// Hint: Use useTicketStore() and storeToRefs()
+const ticketStore = useTicketStore();
+const { success, error, loading } = storeToRefs(ticketStore);
+const { createTicket } = ticketStore;
 
-// TODO: Create form ref with ticket fields
-// Hint: You'll need title, description, priority
 const form = ref({
-    // Your form fields here
+    title: '',
+    description: '',
+    priority: '',
 })
 
-// TODO: Implement handleSubmit function
-// Hint: This should call the createTicket function from ticket store
-// and handle any errors
 const handleSubmit = async () => {
-    // Your code here
+    await createTicket(form.value);
 }
 
-// TODO: Implement onMounted hook
-// Hint: Initialize feather icons
 onMounted(async () => {
-    // Your code here
+    feather.replace();
 })
 </script>
 
@@ -45,10 +43,10 @@ onMounted(async () => {
             <div>
                 <label for="title" class="block text-sm font-medium text-gray-700 mb-2">Judul Tiket</label>
                 <input type="text" id="title" v-model="form.title" placeholder="Contoh: Gangguan Jaringan WiFi"
-                    class="w-full px-4 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500">
-                <div v-if="error?.title" class="flex items-center mt-2">
-                    <p class="text-xs text-red-500">{{ error.title[0] }}</p>
-                </div>
+                    class="w-full px-4 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500" :class="{ 'border-red-500 ring-red-500': error?.title }">
+                <p class="mt-1 text-xs text-red-500" v-if="error?.title">
+                    {{ error?.title?.join(', ') }}
+                </p>                
             </div>
 
             <!-- Deskripsi -->
@@ -57,10 +55,10 @@ onMounted(async () => {
                     Masalah</label>
                 <textarea id="description" v-model="form.description" rows="6"
                     placeholder="Jelaskan masalah Anda secara detail. Sertakan informasi seperti:&#10;- Kapan masalah mulai terjadi&#10;- Apa yang sudah Anda coba&#10;- Dampak masalah terhadap pekerjaan"
-                    class="w-full px-4 py-3 border border-gray-200 rounded-lg text-sm focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500"></textarea>
-                <div v-if="error?.description" class="flex items-center mt-2">
-                    <p class="text-xs text-red-500">{{ error.description[0] }}</p>
-                </div>
+                    class="w-full px-4 py-3 border border-gray-200 rounded-lg text-sm focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500" :class="{ 'border-red-500 ring-red-500': error?.description }"></textarea>
+                <p class="mt-1 text-xs text-red-500" v-if="error?.description">
+                    {{ error?.description?.join(', ') }}
+                </p>  
             </div>
 
             <!-- Prioritas -->

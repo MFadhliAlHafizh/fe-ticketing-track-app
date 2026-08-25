@@ -176,7 +176,12 @@ onMounted(async () => {
                             <h4 class="text-sm font-medium text-gray-800">{{ ticket.title }}</h4>
                             <p class="text-xs text-gray-500 mt-1">#{{ ticket.code }}</p>
                             <div class="flex items-center mt-2 space-x-2">
-                                <span class="px-2 py-1 text-xs font-medium text-blue-700 bg-blue-100 rounded-full">
+                                <span class="px-3 py-1 text-sm  rounded-lg" :class="{
+                                    'text-blue-700 bg-blue-100': ticket.status === 'open',
+                                    'text-yellow-700 bg-yellow-100': ticket.status === 'onprogress',
+                                    'text-green-700 bg-green-100': ticket.status === 'resolved',
+                                    'text-red-700 bg-red-100': ticket.status === 'rejected'
+                                }">
                                     {{ capitalize(ticket.status) }}
                                 </span>
                                 <span class="text-xs text-gray-500">
